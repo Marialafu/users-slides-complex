@@ -1,0 +1,39 @@
+.cardContainer{
+    display: flex;
+    justify-content: space-between;
+    border-radius: 0.625rem;
+    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.36);
+    padding: 0.625rem;
+    margin-bottom: 2.5rem;
+}
+.userInfoContainer{
+    display: flex;
+    gap: 0.625rem;
+    align-items: center;
+}
+.userTextInfoContainer{
+    display: flex;
+    flex-direction: column;
+    gap: 0.3125rem;
+}
+.userState{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.625rem;
+}
+
+.userImage{
+    border-radius: 50%;
+    scale: 80%;
+}
+.text{
+    font-size: 200%;
+    margin: 0;
+}
+.green{
+    color: rgb(98, 165, 98);
+}
+.red{
+    color: rgb(248, 75, 75);
+}
