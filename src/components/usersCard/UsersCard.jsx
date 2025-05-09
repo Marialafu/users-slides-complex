@@ -1,78 +1,88 @@
-import styles from './usersCard.module.css'
-import {USERS} from '../../constants/usersInfo'
-import { v4 } from "uuid";
+import styles from './usersCard.module.css';
+import { USERS } from '../../constants/usersInfo';
+import { v4 } from 'uuid';
 import { useState } from 'react';
 
-let users = [...USERS]
+const UsersCard = () => {
+  const [onlyActive, setOnlyActive] = useState(false);
+  const [searcherBar, setSearcherBar] = useState('');
+  const [orderBy, setOrderBy] = useState('');
 
-const UsersCard = ({active}) => {
+  const filteredUsersByActive = filterUsersByActive(onlyActive);
+  const filteredUsersByBar = filterUsersBySearcherBar(
+    searcherBar,
+    filteredUsersByActive
+  );
+  const filteredUsers = orderUsersBy(orderBy, filteredUsersByBar);
 
-    //por qué cuando paso el active me pone todos inactivos, antes si me iba bien pero cuando lo he juntado ha dejado de funcionar.
-    const stateText = active ? 'Activo' : 'Inactivo'
-    const stateColor = active ? 'green' : 'red'
-    
-    const [status, setStatus] = useState(false)
-
-    return (
-        <>
-        <div className={styles.filterContainer}>
-            <input type="text" onInput={searcherBar} />
-            <div>
-                <input type="checkbox" onChange={activeFilterButton(status, setStatus)}></input>
-                <label>Activos</label>
-            </div>
-            <select>
-                <option value="default">Por Defecto</option>
-                <option value="name">Por Nombre</option>
-            </select>
-
+  return (
+    <>
+      <div className={styles.filterContainer}>
+        <input
+          type='text'
+          onInput={event => setSearcherBar(event.target.value)}
+        />
+        <div>
+          <input
+            type='checkbox'
+            onChange={() => setOnlyActive(!onlyActive)}
+          ></input>
+          <label>Activos</label>
         </div>
-        {users.map(user => {
+        <select onChange={event => setOrderBy(event.target.value)}>
+          <option value='default'>Por Defecto</option>
+          <option value='name'>Por Nombre</option>
+        </select>
+      </div>
+      {filteredUsers.map(user => {
+        const stateText = user.active ? 'Activo' : 'Inactivo';
+        const stateColor = user.active ? 'green' : 'red';
+
         return (
-            
-         <div key={v4()} className={styles.cardContainer}>
+          <div key={v4()} className={styles.cardContainer}>
             <div className={styles.userInfoContainer}>
-                <img className={styles.userImage} src={user.profileImage} alt="" />
-                <div className={styles.userTextInfoContainer}>
-                  <h2 className={styles.text}>{user.name}</h2>
-                  <span>@
-                    {user.username}
-                  </span>
-                </div>
-                
+              <img
+                className={styles.userImage}
+                src={user.profileImage}
+                alt=''
+              />
+              <div className={styles.userTextInfoContainer}>
+                <h2 className={styles.text}>{user.name}</h2>
+                <span>@{user.username}</span>
+              </div>
             </div>
             <div className={styles.userState}>
-                <span className={styles[stateColor]}>{stateText}</span>
-                <button>Ver Detalles</button>
+              <span className={styles[stateColor]}>{stateText}</span>
+              <button>Ver Detalles</button>
             </div>
-         </div>
-    )
-    })}
-        </>
-    )
-}
+          </div>
+        );
+      })}
+    </>
+  );
+};
 
-const searcherBar = event => {
-    const inputText = event.target.value
-    const inputTextLenght = inputText.length
+const orderUsersBy = (orderBy, filteredUsersByBar) => {
+  const orderedList =
+    orderBy === 'name'
+      ? [...filteredUsersByBar].sort((a, b) => a.name.localeCompare(b.name))
+      : filteredUsersByBar;
 
-    users =  USERS.filter(user => {
-     return  user.name.charAt(inputTextLenght - 1) === inputText.charAt(inputTextLenght - 1)
-    })
+  return orderedList;
+};
 
-}
+const filterUsersByActive = onlyActive => {
+  if (onlyActive) {
+    return USERS.filter(user => user.active);
+  }
+  return USERS;
+};
 
-const activeFilterButton = (status, setStatus) => {
-    setStatus = !status
+const filterUsersBySearcherBar = (searcherBar, filteredUsers) => {
+  return filteredUsers.filter(user => {
+    const userName = user.name.toLowerCase();
+    return userName.includes(searcherBar.toLowerCase());
+  });
+};
 
-    if (status){
-    users =  USERS.filter(user => {
-     return  user.active === true
-    })
-    } else {
-        users = [...USERS]
-    }
-
-}
-
-export default UsersCard
+export default UsersCard;
